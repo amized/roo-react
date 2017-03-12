@@ -1,4 +1,4 @@
-# Statey
+# Reactoo
 
 Stateful objects for React.
 
