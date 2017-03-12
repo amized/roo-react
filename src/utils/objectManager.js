@@ -19,8 +19,6 @@ class ObjectManager {
 	// we can ensure that registered elements will always be in order
 	// of component heirarchy
 	registerElementToObjects(onUpdate, props) {
-		//this.registerPropsRecurse(onUpdate, props);
-
 		const objs = this.getAllReactooObjs(props);
 		if (objs.length === 0) {
 			return null;
@@ -37,7 +35,6 @@ class ObjectManager {
 			this.addToken(token, obj);
 		})
 		return token;
-
 	}
 
 	deregisterElement(token) {

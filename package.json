@@ -4,7 +4,7 @@
   "description": "Object Oriented style programming with React",
   "main": "lib/Reactoo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha tests --compilers js:babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -13,25 +13,28 @@
   "author": "Amiel Zwier <hi@amielzwier.com> (http://amielzwier.com)",
   "license": "MIT",
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
-    "node-cache": "^4.1.1",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-router": "^3.0.2"
+    "react-dom": "^15.4.2"
   },
   "devDependencies": {
+    "babel-core": "^6.23.1",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-react": "^6.23.0",
     "babel-preset-stage-2": "^6.18.0",
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
+    "enzyme": "^2.7.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-banner": "^0.1.3",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.1.1",
     "gulp-uglify": "^2.0.0",
+    "jsdom": "^9.11.0",
+    "mocha": "^3.2.0",
+    "react-addons-test-utils": "^15.4.2",
+    "sinon": "^1.17.7",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

@@ -1,10 +1,12 @@
 import objectManager from "../utils/ObjectManager"
 
 export default class ReactooClass {
-	constructor() {
+	constructor(initialState = {}) {
 
-		let state = {};
+		let state = initialState;
 		let changed = false;
+		Object.assign(this, state);
+
 		this.__registeredTokens = [];
 
 		this.isChanged = () => {
@@ -12,10 +14,6 @@ export default class ReactooClass {
 		}
 
 		this.set = (newState) => {
-			// We don't notify an update is there's 
-			// an update already in progress, because it means that
-			// this set() call is being run from a parent set() call.
-			console.log("calling set...",  this.constructor.name);
 			Object.assign(state, newState);
 			Object.assign(this, state);
 			changed = true;
