@@ -16,9 +16,11 @@ export default class ReactooClass {
 		this.set = (newState) => {
 			Object.assign(state, newState);
 			Object.assign(this, state);
-			changed = true;
-			objectManager.notifyUpdate(this.__registeredTokens, newState);
-			changed = false;
+			if (this.__registeredTokens.length > 0) {
+				changed = true;
+				objectManager.notifyUpdate(this.__registeredTokens, newState, this);
+				changed = false;
+			}
 		}
 	}
 }

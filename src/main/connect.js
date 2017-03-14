@@ -7,19 +7,24 @@ export default function connect(WrappedComponent) {
 		constructor(props) {
 			super(props);
 			this.lastUpdatedId = -1;
-			const onUpdate = (updateId) => {
-				if (updateId !== this.lastUpdatedId) {
-					this.forceUpdate();
-					this.lastUpdatedId = updateId;
-				}
-			}
-			this.reactooToken = objectManager.registerElementToObjects(onUpdate, this.props);
+			this.reactooToken = objectManager.registerElement(this.onUpdate, this.props);
 		}
 
-		componentWillUpdate() {
+		onUpdate = (updateId) => {
+			if (updateId !== this.lastUpdatedId) {
+				this.forceUpdate();
+				this.lastUpdatedId = updateId;
+			}
+		}
+
+		componentWillUpdate(nextProps) {
 			// Makes sure we don't render this component again if
 			// rendered from an ancestor component with connect()
 			this.lastUpdatedId = objectManager.getCurrentUpdateId();
+			const newToken = objectManager.reRegisterElement(this.props, nextProps, this.reactooToken);
+			if (newToken !== null) {
+				this.reactooToken = newToken;
+			}
 		}
 
 		componentWillUnmount() {

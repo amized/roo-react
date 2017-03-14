@@ -86,7 +86,6 @@ class ChildComp extends Component {
 
 ParentComp = connect(ParentComp);
 ChildComp = connect(ChildComp);
-console.log(ParentComp);
 //const parentCompRenderSpy = sinon.spy(ParentComp, "render");
 
 let spied = sinon.spy(ParentComp.prototype, 'render');

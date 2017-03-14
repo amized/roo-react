@@ -15,11 +15,10 @@ Let's say you want to use plain javascript classes to describe the logic and sta
 	}
 	
 And then use React to render your UI by passing in your object as a prop:
-
+	```js
 	let myorg = new Organisation()
 	...
 	<MyComponent org={myorg} />	
-
 
 For the initial render, this works ok. But if I want to my member function setName to trigger an update on my react component, we have to do something like this:
 
