@@ -9,9 +9,9 @@ Let's say you want to use plain javascript classes to describe the logic and sta
 	
 ```javascript
 class Organisation {
-	setName(name) {
-		this.name = name;
-	}
+  setName(name) {
+    this.name = name;
+  }
 }
 ```
 	
@@ -27,24 +27,22 @@ For the initial render, this works ok. But if I want to my member function setNa
 
 ```javascript
 class MyComponent extends React.Component {
-	
-	setOrgName = () => {
-		this.props.org.setName("bar");
-		this.forceUpdate();
-	}
-	
-	render() {
-		return (
-			<div>
-				<div>{this.props.org.name}</div>
-				<button onClick={this.setOrgName}>Click</button>
-			</div>
-		)
-	}
+  setOrgName = () => {
+    this.props.org.setName("bar");
+    this.forceUpdate();
+  }
+  render() {
+	return (
+	  <div>
+		<div>{this.props.org.name}</div>
+		<button onClick={this.setOrgName}>Click</button>
+	  </div>
+	)
+  }
 }
 ```
 
-###This is problematic for a few reasons
+### This is problematic for a few reasons
 
 * I need manually keep track of when I call member functions that change the state of my objects
 * If I call the member function from outside React, or from a different component, there is no way to update the associated React elements on the page
@@ -57,9 +55,9 @@ Let's solve this by extending a ReactooClass
 import { ReactooClass } from 'reactoo'
 
 class Organisation extends ReactooClass  {
-	setName(name) { 
-		this.set({name}) 
-	}
+  setName(name) { 
+    this.set({name}) 
+  }
 }
 ```	
 
@@ -73,16 +71,15 @@ Now just use the ```connect``` wrapper on your component:
 import { connect } from 'reactoo'
 
 class MyComponent extends React.Component {
-	
-	render() {
-		const org = this.props.org;
-		return (
-			<div>
-				<div>{org.name}</div>
-				<button onClick={()=>{org.setName("bar")}}>Click</button>
-			</div>
-		)
-	}
+  render() {
+    const org = this.props.org;
+    return (
+      <div>
+        <div>{org.name}</div>
+        <button onClick={()=>{org.setName("bar")}}>Click</button>
+      </div>
+    )
+  }
 }
 	
 MyComponent = connect(MyComponent);
