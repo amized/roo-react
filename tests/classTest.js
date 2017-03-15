@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-import { ReactooClass, connect } from '../src/Reactoo'
+import Reactoo, { connect } from '../src/Reactoo'
 import React, { Component } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
@@ -15,7 +15,7 @@ global.window = doc.defaultView
 
 /*** Reactoo classes ***/
 
-class Company extends ReactooClass {
+class Company extends Reactoo.Class {
 
 	constructor() {
 		super({
@@ -42,7 +42,7 @@ class Company extends ReactooClass {
 }
 
 
-class Employee extends ReactooClass {
+class Employee extends Reactoo.Class {
 
 	constructor(name) {
 		super({

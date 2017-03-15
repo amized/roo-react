@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-import { ReactooClass, connect } from '../src/Reactoo'
+import Reactoo, { Class, connect }  from '../src/Reactoo'
 import React, { Component } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
@@ -17,7 +17,7 @@ const om = objectManager;
 
 
 
-class Company extends ReactooClass {
+class Company extends Class {
 
 	constructor() {
 		super({
@@ -37,7 +37,7 @@ class Company extends ReactooClass {
 }
 
 
-class Employee extends ReactooClass {
+class Employee extends Class {
 
 	constructor(name) {
 		super({
@@ -83,7 +83,7 @@ describe('Object manager', function () {
 
 		assert.deepEqual([company1, employee1, employee2], om.registeredObjects);
 		done();
-		
+
 	});
 
 
