@@ -104,4 +104,78 @@ describe('Object manager', function () {
 	});
 
 
+	it('should re register elements correctlt', function(done) {
+
+		om.clear();
+
+		let onUpdate = ()=>false;
+		let company1 = new Company;
+		let company2 = new Company;
+		let employee1 = new Employee("Barbie");
+		let employee2 = new Employee("Boobie")
+		let props = {
+			company: company1, 
+			num: 5, 
+			someString: "hello"
+		}
+		om.registerElement(onUpdate, props);
+		assert.deepEqual([company1], om.registeredObjects);
+		assert.deepEqual(company1.__registeredTokens, [0]);
+
+		let nextProps = {
+			company: null, 
+			num: 5, 
+			someString: "hello"			
+		}
+
+		om.reRegisterElement(props, nextProps, 0);
+		assert.deepEqual(company1.__registeredTokens, []);
+
+		props = nextProps;
+		nextProps = {
+			company: company2, 
+			num: 5,
+			someString: "hi"
+		}
+		om.reRegisterElement(props, nextProps, 0);
+		assert.deepEqual(company1.__registeredTokens, []);
+		assert.deepEqual(company2.__registeredTokens, [0]);
+		done();
+	});
+	/*
+	it('should refresh registered objects and update the tokens', function(done) {
+
+	});
+	*/
+	it('should pass any react element tokens from parent objs to children objs when set is called on the parent', function(done) {
+		
+		om.clear();
+		let onUpdate = ()=>false;
+		const company = new Company();
+		const employee3 = new Employee("Mary");
+
+		om.registerElement(onUpdate, {
+			company: company
+		});
+		assert.deepEqual(company.__registeredTokens, [0]);
+
+		company.addEmployee(employee3);
+		assert.deepEqual(employee3.__registeredTokens, [0]);
+		
+		om.registerElement(onUpdate, {
+			employee: employee3
+		});
+		assert.deepEqual(employee3.__registeredTokens, [0, 1]);
+
+		done();
+
+	});
+
+	it('should update allow calling set on a child obj to update', function(done) {
+		
+		om.clear();
+		done();
+
+	});
+
 });

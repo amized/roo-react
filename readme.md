@@ -1,4 +1,4 @@
-# Reactoo
+# Roo
 
 ### Stateful objects that will update your React components.
 
@@ -121,7 +121,7 @@ Notice now there is no need for the extra update call, or even the extra method 
 More importantly, I can now call the member function on my object from anywhere in my application and the React element will appropriately update.
 
 ```javascript
-$(".IJustWannaUseJqueryOverHereOk").on("click", ()=>{
+$(".IJustWannaUseJqueryHereOk").on("click", ()=>{
   myorg.setName("James")
   // The React component updates
 }	

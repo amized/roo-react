@@ -186,3 +186,11 @@ describe('Reactoo object', function () {
 	});
 
 });
+
+
+
+
+
+
+
+

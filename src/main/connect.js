@@ -7,14 +7,25 @@ export default function connect(WrappedComponent) {
 		constructor(props) {
 			super(props);
 			this.lastUpdatedId = -1;
-			this.reactooToken = objectManager.registerElement(this.onUpdate, this.props);
+			this.reactooToken = objectManager.registerElement(this.onUpdate, props);
+			this.state = {
+				lastUpdatedId: -1
+			}
 		}
 
 		onUpdate = (updateId) => {
-			if (updateId !== this.lastUpdatedId) {
-				this.forceUpdate();
-				this.lastUpdatedId = updateId;
+			if (updateId !== this.state.lastUpdatedId) {
+				this.setState({
+					lastUpdatedId: updateId
+				})
 			}
+		}
+
+		componentWillReceiveProps(nextProps) {
+			this.setState({
+				lastUpdatedId: objectManager.getCurrentUpdateId()
+			})
+			objectManager.reRegisterElement(this.props, nextProps, this.reactooToken);
 		}
 
 		componentWillUpdate(nextProps) {

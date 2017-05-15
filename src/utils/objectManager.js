@@ -9,7 +9,7 @@ class ObjectManager {
 	clear() {
 		this.registeredObjects = [];
 		this.tokenIds = 0;
-		this.updates = {};
+		this.reactElements = {};
 		this.updateIds = 0;		
 	}
 
@@ -17,28 +17,30 @@ class ObjectManager {
 	// we can ensure that registered elements will always be in order
 	// of component heirarchy
 	registerElement(onUpdate, props) {
-		const objs = this.getAllReactooObjs(props);
+		const objs = this.getReactooObjsShallow(props);
 
 		if (objs.length === 0) {
 			return null;
 		}
 
 		let token = this.tokenIds;
-		let update = {
+		this.reactElements[token] = {
 			token: token,
 			func: onUpdate
-		}
-		this.updates[token] = update;
-		this.tokenIds++;
+		};
+
 		// Need to pass the update token to each some how 
 		objs.forEach(obj=>{
 			this.addToken(token, obj);
 		})
+
+		this.tokenIds++;
+
 		return token;
 	}
 
 	deregisterElement(token) {
-		this.updates[token] = undefined;
+		this.reactElements[token] = undefined;
 		this.registeredObjects = this.registeredObjects.filter(obj=>{
 			this.removeToken(token, obj);
 			return obj.__registeredTokens.length > 0;
@@ -80,11 +82,12 @@ class ObjectManager {
 		  return a - b;
 		});
 
-		const updates = tokens.map(token => this.updates[token]);
-		updates.forEach(u=>u.func(this.updateIds));
-		this.updateIds++;
-
+		const reactElements = tokens.map(token => this.reactElements[token]);
+		const updateId = this.updateIds;
+		reactElements.forEach(u=>u.func(updateId));
+		console.log("We are notifying the update", updateId )
 		this.refreshObjects(tokens, props, obj);
+		this.updateIds++;
 	}
 
 
@@ -98,6 +101,9 @@ class ObjectManager {
 		let toAdd = _.difference(newObjs, prevObjs);
 		let toRemove = _.difference(prevObjs, newObjs);
 
+		console.log("New objects ", newObjs, "Old objects ", prevObjs);
+		console.log("Atrying to add tokens ", tokens, " to ", toAdd);
+		console.log("Atrying to remove tokens ", tokens, " from ", toRemove);
 		toAdd.forEach(obj=> {
 			tokens.forEach(token => {
 				this.addToken(token, obj);
@@ -111,18 +117,35 @@ class ObjectManager {
 	}
 
 	reRegisterElement(oldProps, newProps, token) {
+		const update = this.reactElements[token];
+		if (!update) return;
+		
+		// Finds all the Roo objects inside props that are passed
+		// into the component. It compares prev and next and
+		// updates tokens on the objects
 
-		const update = this.updates[token];
 		const oldObjs = this.getReactooObjsShallow(oldProps);
 		const newObjs = this.getReactooObjsShallow(newProps);
 
 		let newToken = token;
-		let diff = _.xor(oldObjs, newObjs);
 
+		let removed = _.difference(oldObjs, newObjs);
+		let added = _.difference(newObjs, oldObjs);
+
+		added.forEach((obj) => {
+			this.addToken(token, obj); 
+		})
+
+		removed.forEach((obj) => {
+			this.removeToken(token, obj); 
+		})
+
+		/*
 		if (diff.length > 0) {
 			this.deregisterElement(token);
 			newToken = this.registerElement(update.func, newProps);
 		}
+		*/
 
 
 
@@ -142,14 +165,8 @@ class ObjectManager {
 			if (prop === undefined || prop === null) {
 				return;
 			}
-			if (typeof prop === "object") {
-				if (prop instanceof ReactooClass) {
-					// No duplicates and avoid infinite loops with circular chains
-					if (objs.indexOf(prop) !== -1) {
-						return;
-					}
-					objs.push(prop);
-				}
+			if (typeof prop === "object" && prop instanceof ReactooClass) {
+				objs.push(prop);
 			}
 		});
 		return objs;		

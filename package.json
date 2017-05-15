@@ -1,5 +1,5 @@
 {
-  "name": "react-oo",
+  "name": "roo-react",
   "version": "1.0.0",
   "description": "Object Oriented style programming with React",
   "main": "lib/Reactoo.js",
