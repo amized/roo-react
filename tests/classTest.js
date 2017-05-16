@@ -1,10 +1,9 @@
 var assert = require('assert');
 
-import Reactoo, { connect } from '../src/Reactoo'
+import Roo, { connect } from '../src/Roo'
 import React, { Component } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
-
 
 
 import jsdom from 'jsdom'
@@ -13,9 +12,9 @@ global.document = doc
 global.window = doc.defaultView
 
 
-/*** Reactoo classes ***/
+/*** Roo classes ***/
 
-class Company extends Reactoo.Class {
+class Company extends Roo.Class {
 
 	constructor() {
 		super({
@@ -42,7 +41,7 @@ class Company extends Reactoo.Class {
 }
 
 
-class Employee extends Reactoo.Class {
+class Employee extends Roo.Class {
 
 	constructor(name) {
 		super({
@@ -91,7 +90,7 @@ ChildComp = connect(ChildComp);
 let spied = sinon.spy(ParentComp.prototype, 'render');
 let childSpied = sinon.spy(ChildComp.prototype, 'render');
 
-describe('Reactoo object', function () {
+describe('Roo object', function () {
 	it('should update properties when calling set()', function(done) {
 		
 		const company = new Company();
@@ -132,13 +131,12 @@ describe('Reactoo object', function () {
 		childSpied.reset();
 	});
 
-	it('should not trigger a render more than once in one set() call', function(done) {
-		
-		const company = new Company();
-		const wrapper = mount(<ParentComp company={company} />);
+	it('should not trigger a render more than once in one set() call when an object is on child component and its parent', function(done) {
 		spied.reset();
+		const company = new Company();
 		const employee1 = new Employee("James");
 		company.addEmployee(employee1);
+		const wrapper = mount(<ParentComp company={company} employee={employee1} />);
 		assert.equal(ParentComp.prototype.render.callCount, 1);
 		assert.equal(ChildComp.prototype.render.callCount, 1);
 
@@ -170,13 +168,13 @@ describe('Reactoo object', function () {
 
 		employee2.setName("Henry the second");
 
-		assert.equal(ParentComp.prototype.render.callCount, 3);
+		assert.equal(ParentComp.prototype.render.callCount, 2);
 		assert.equal(ChildComp.prototype.render.callCount, 3);
 		assert.equal(wrapper.html(), "<div><div></div><div>Henry the second</div></div>");
 
 		employee1.setName("James the first");
 
-		assert.equal(ParentComp.prototype.render.callCount, 3);
+		assert.equal(ParentComp.prototype.render.callCount, 2);
 		assert.equal(ChildComp.prototype.render.callCount, 3);
 		assert.equal(wrapper.html(), "<div><div></div><div>Henry the second</div></div>");
 
@@ -184,6 +182,37 @@ describe('Reactoo object', function () {
 		spied.reset();
 		childSpied.reset();
 	});
+
+
+	it('should be able to run multiple set calls with updating only once', function(done) {
+
+		const company = new Company();
+		const employee1 = new Employee("James");
+		const employee2 = new Employee("Henry");
+		const employee3 = new Employee("Mary");
+
+		const wrapper = mount(<ParentComp company={company} />);
+
+		const updater = Roo.updateOnce(function() {
+			company.set({
+				employees: [employee1, employee2]
+			})
+			employee2.setName("Henry the second");
+			employee1.setName("Joooohn");
+			employee2.setName("second");
+		});
+
+		updater();
+
+		assert.equal(ParentComp.prototype.render.callCount, 2);
+		assert.equal(ChildComp.prototype.render.callCount, 2);
+		assert.equal(wrapper.html(), "<div><div></div><div>Joooohn</div><div>second</div></div>");
+
+		done();
+		spied.reset();
+		childSpied.reset();
+	});
+
 
 });
 

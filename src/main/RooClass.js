@@ -7,16 +7,15 @@ export default class ReactooClass {
 		let changed = false;
 		Object.assign(this, state);
 
-		this.__registeredTokens = [];
-		this.__reactooProps = {
-			registeredTokens: [],
+		this.__roo = {
+			tokens: [],
 			isChanged: () => changed,
 			set: (newState) => {
 				Object.assign(state, newState);
 				Object.assign(this, state);
-				if (this.__registeredTokens.length > 0) {
+				if (this.__roo.tokens.length > 0) {
 					changed = true;
-					objectManager.notifyUpdate(this.__registeredTokens, newState, this);
+					objectManager.notifyUpdate(this.__roo.tokens, newState, this);
 					changed = false;
 				}				
 			}
@@ -24,10 +23,10 @@ export default class ReactooClass {
 	}
 
 	set(newState) {
-		this.__reactooProps.set(newState);
+		this.__roo.set(newState);
 	}
 
 	isChanged() {
-		return this.__reactooProps.isChanged();
+		return this.__roo.isChanged();
 	}
 }

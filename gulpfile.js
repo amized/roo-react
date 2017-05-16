@@ -22,7 +22,7 @@ var comment = '/*\n' +
     '*/\n\n';
 
 var DEST = 'dist/';
-var outputFileName = "Reactoo"
+var outputFileName = "Roo"
 var babelPresets = ["es2015", "stage-2", "react"];
 var reBannerComment = new RegExp('^\\s*(?:\\/\\*[\\s\\S]*?\\*\\/)\\s*');
 
@@ -46,7 +46,7 @@ function transpile() {
 }
 
 function compile(watch) {
-  var bundler = watchify(browserify('./src/Reactoo.js', { 
+  var bundler = watchify(browserify('./src/Roo.js', { 
     debug: false, 
     standalone: outputFileName
   }).transform(babel, {presets: babelPresets}));

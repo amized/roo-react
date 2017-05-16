@@ -2,7 +2,7 @@
   "name": "roo-react",
   "version": "1.0.0",
   "description": "Object Oriented style programming with React",
-  "main": "lib/Reactoo.js",
+  "main": "lib/Roo.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha tests --compilers js:babel-core/register"
   },
