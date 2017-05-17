@@ -1,11 +1,15 @@
+<img src="./roo.jpeg" width="200" height="200" />
+
 # Roo - React Object Oriented
 
 ### Stateful objects that will update your React components.
 
+
+
 Let's say you want to use plain javascript classes to describe the logic and state of your application. You want your objects to control their own state and logic for how that state can be manipulated. 
 Roo gives you a way of doing this while using React for your UI.
 
-## Who's this really good for?
+## Who's this useful for?
 
 In some sense React already adopts an OO methodology - components are objects that hold state and logic for updating their state. And this is great for describing a user interface. It's even great for building simple applications who's job it is to display or submit data, like a website.
 
@@ -16,7 +20,7 @@ But let's say you're building a more complex web/HTML application like...
 * an AI
 * modeling
 
-Performance may be a critical issue so part of UI may not even use React (e.g. a physics engine), and you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic, but currently it's a bit messy trying to mix these with React.
+Performance may be a critical issue so parts of your UI may not even use React (e.g. a physics engine or game map). Also, you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic and state, but currently it's a bit messy trying to implement this in a consistent way with React.
 
 ## Example
 Let's say your application has superheros.
@@ -108,7 +112,7 @@ class Superhero extends Class  {
 }
 ```	
 
-What the ```@stateChange``` decorator does is tells Roo that the code in your function will in some way modify the state of your object, and therefor it should update the relevant React components to reflect the change your UI.
+What the ```@stateChange``` decorator does is tells Roo that the code in your function will in some way modify the state of your object, and therefor it should update the relevant React components to reflect the change in your UI.
 
 To get this to work with your components use the ```connect``` wrapper:
 
