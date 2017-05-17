@@ -2,7 +2,7 @@
 
 # Roo - React Object Oriented
 
-Roo is a javascript library that make's it easy to use plain javascript classes and objects to describe your state, while using React for your UI.
+Roo is a javascript library that makes it easy to use plain javascript classes to describe your state and business logic, while using React for your UI.
 
 ## Who's this useful for?
 
