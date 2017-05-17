@@ -2,12 +2,7 @@
 
 # Roo - React Object Oriented
 
-### Stateful objects that will update your React components.
-
-
-
-Let's say you want to use plain javascript classes to describe the logic and state of your application. You want your objects to control their own state and logic for how that state can be manipulated. 
-Roo gives you a way of doing this while using React for your UI.
+Roo is a javascript library that make's it easy to use plain javascript classes and objects to describe your state, while using React for your UI.
 
 ## Who's this useful for?
 
@@ -44,7 +39,7 @@ let myHero = new Superhero()
 <Hero superhero={myHero} />	
 ```
 
-For the initial render, this works ok. But if I want to my member function ```setPower()``` to trigger an update on my react component, we have to do something like this:
+For the initial render, this works ok. But if I want my method ```setPower()``` to trigger an update on my react component, we have to do something like this:
 
 ```javascript
 class MyWrapper extends React.Component {
@@ -72,7 +67,7 @@ class MyWrapper extends React.Component {
   }
 }
 
-
+...
 
 class Hero extends React.Component {
 
