@@ -1,8 +1,7 @@
-# Roo
+# Roo - React Object Oriented
 
 ### Stateful objects that will update your React components.
 
-## Object Oriented programing
 Let's say you want to use plain javascript classes to describe the logic and state of your application. You want your objects to control their own state and logic for how that state can be manipulated. 
 Roo gives you a way of doing this while using React for your UI.
 
@@ -50,8 +49,8 @@ class MyWrapper extends React.Component {
   constructor() {
     super(props);
     this.state = {
-  	   org: new Organisation()
-  	 }
+      org: new Organisation()
+    }
   }
 
   setOrgName = () => {
