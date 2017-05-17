@@ -16,54 +16,53 @@ But let's say you're building a more complex web/HTML application like...
 * an AI
 * modeling
 
-Performance may be a critical issue, and you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic, but currently it's a bit messy trying to mix these with React.
+Performance may be a critical issue so part of UI may not even use React (e.g. a physics engine), and you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic, but currently it's a bit messy trying to mix these with React.
 
 ## Example
-Let's say your application has an Organisation.
+Let's say your application has superheros.
 
 
 
 	
 ```javascript
-class Organisation {
-  setName(name) {
-    this.name = name
+class Superhero {
+  setPower(power) {
+    this.power = power
   }
 }
 ```
 	
-And then you use React to render your UI by passing in your object as a prop:
+And then you use React to render part of your UI by passing in your object as a prop:
 
 ```javascript
-let myorg = new Organisation()
-
-<MyComponent org={myorg} />	
+let myHero = new Superhero()
+...
+<Hero superhero={myHero} />	
 ```
 
-For the initial render, this works ok. But if I want to my member function ```setName()``` to trigger an update on my react component, we have to do something like this:
+For the initial render, this works ok. But if I want to my member function ```setPower()``` to trigger an update on my react component, we have to do something like this:
 
 ```javascript
-
 class MyWrapper extends React.Component {
   
   constructor() {
     super(props);
     this.state = {
-      org: new Organisation()
+      superhero: new Superhero()
     }
   }
 
-  setOrgName = () => {
-    this.state.org.setName("bar")
+  setHeroPowerFlying = () => {
+    this.state.superhero.setPower("flying")
     this.setState({
-      org: this.state.org
+      superhero: this.state.superhero
     })
   }
   
   render() {
     return (
       <div>
-        <MyComponent org={this.state.myorg} setOrgName={this.setOrgName}/>
+        <Hero superhero={this.state.superhero} setHeroPowerFlying={this.setHeroPowerFlying}/>
       </div>
     )
   }
@@ -71,13 +70,13 @@ class MyWrapper extends React.Component {
 
 
 
-class MyComponent extends React.Component {
+class Hero extends React.Component {
 
   render() {
     return (
       <div>
-        <div>{this.props.org.name}</div>
-        <button onClick={this.props.setOrgName}>Click</button>
+        <div>{this.props.superhero.power}</div>
+        <button onClick={this.props.setHeroPowerFlying}>Click</button>
       </div>
     )
   }
@@ -86,7 +85,7 @@ class MyComponent extends React.Component {
 ```
 ### This is problematic for a few reasons
 
-* I need to manually keep track every time I call member functions on ```Organisation``` that modify the object's state, and then make sure I follow it with a ```setState()```
+* I need to manually keep track every time I call member functions on ```Superhero``` that modify the object's state, and then make sure I follow it with a ```setState()```
 
 
 * If I call the member function from outside React, or from a different component, there is no way to update the associated React elements on the page
@@ -99,11 +98,11 @@ Let's solve this by adding a ```@stateChange``` decorator to our function:
 ```javascript
 import { stateChange } from 'roo-react'
 
-class Organisation extends Class  {
+class Superhero extends Class  {
 
   @stateChange
-  setName(name) { 
-    this.name = name; 
+  setPower(power) {
+    this.power = power
   }
   
 }
@@ -116,28 +115,30 @@ To get this to work with your components use the ```connect``` wrapper:
 ```javascript
 import { connect } from 'roo-react'
 
-class MyComponent extends React.Component {
+class Hero extends React.Component {
+
   render() {
-    const org = this.props.org
+    const superhero = this.props.superhero;
     return (
       <div>
-        <div>{org.name}</div>
-        <button onClick={()=>{ org.setName("bar") }}>Click</button>
+        <div>{superhero.power}</div>
+        <button onClick={()=>{ superhero.setPower("flying") }}>Click</button>
       </div>
     )
   }
+
 }
-	
-MyComponent = connect(MyComponent)
+
+Hero = connect(Hero)
 ```
 Notice now there is no need for a ```setState()``` call, and no need to put state-modifying logic into the component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
 
 Don't forget to pass in your object as a prop to the component to bind your components to the object
 
 ```javascript
-let myorg = new Organisation()
+let myHero = new Superhero()
 ...
-<MyComponent org={myorg} /> 
+<Hero superhero={myHero} />	
 ```
 
 And that's it!
@@ -146,7 +147,7 @@ I can now call the member function on my object from anywhere in my application 
 
 ```javascript
 $(".IJustWannaUseJqueryHereOk").on("click", ()=>{
-  myorg.setName("James")
+  myHero.setPower("night-vision")
   // The React component updates
 }	
 
