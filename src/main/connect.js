@@ -1,5 +1,5 @@
 import React, { Component, PropTypes, createElement } from 'react'
-import objectManager from "../utils/ObjectManager"
+import objectManager from "./ObjectManager"
 
 export default function connect(WrappedComponent) {
 	

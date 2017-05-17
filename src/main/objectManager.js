@@ -1,5 +1,5 @@
-import RooClass from '../main/RooClass'
 import _ from "lodash"
+
 class ObjectManager {
 
 	constructor() {
@@ -10,8 +10,8 @@ class ObjectManager {
 		this.tokenIds = 0;
 		this.reactElements = {};
 		this.updateIds = 0;	
-		this.updateBuffer = [];	
-		this.notifyMultipleUpdatesOn = false;
+		this.updateBuffer = [];
+		this.isUpdating = false;
 	}
 
 	// Because this method gets invoked from component's constructor,
@@ -87,12 +87,7 @@ class ObjectManager {
 		return this.updateIds;
 	}
 
-	notifyUpdate(tokens, props, obj) {
-		if (this.notifyMultipleUpdatesOn) {
-			this.updateBuffer.push(tokens);
-			return;
-		}
-
+	notifyUpdate(tokens) {
 		// Sort tokens so the update functions are in heirachial order
 		tokens.sort(function(a, b) {
 		  return a - b;
@@ -113,7 +108,49 @@ class ObjectManager {
 		this.updateBuffer = [];
 	}
 
+	// Decorator function for notifying a state change
+	stateChange(target, name, descriptor) {
+	  let fn = descriptor.value;
+	  let om = this;
+	  
+	  // Adds a property onto the prototype so that we can quickly
+	  // check that this object is a Roo object
+	  target.__roo_enabled = true;
+	  let newFn  = function (...args) {
+	  	if (this.__roo) {
+	  		om.updateBuffer.push(this.__roo.tokens);
+	  	}
+	  	if (!om.isUpdating) {
+		  	om.isUpdating = true;
+		    const result = fn.apply(this, arguments);
+		    const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
+		    om.notifyUpdate(uniqTokens);
+		    om.updateBuffer = [];
+		    om.isUpdating = false;
+		    return result;
+	  	}
+	  	return fn.apply(this, arguments);
+	  };
+	  descriptor.value = newFn;
+	  return descriptor;
+	}
 
+
+	isRooObject(obj) {
+		if (typeof obj === "object") {
+			if (obj.__roo !== undefined) {
+				return true;
+			}
+			let proto = Object.getPrototypeOf(obj);
+			if (proto.__roo_enabled) {
+				obj.__roo = {
+					tokens: []
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 
 	getRooObjsShallow(props) {
 		const objs = []
@@ -122,7 +159,7 @@ class ObjectManager {
 			if (prop === undefined || prop === null) {
 				return;
 			}
-			if (typeof prop === "object" && prop instanceof RooClass) {
+			if (this.isRooObject(prop)) {
 				objs.push(prop);
 			}
 		});

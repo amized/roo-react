@@ -1,9 +1,7 @@
-import RooClass from './main/RooClass'
 import connect from './main/connect'
-import updateOnce from './main/updateOnce'
+import { stateChange } from './main/decorators'
 
 module.exports = {
-	updateOnce: updateOnce,
-	connect: connect,
-	Class: RooClass
+	stateChange: stateChange,
+	connect: connect
 };

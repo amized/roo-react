@@ -46,10 +46,15 @@ function transpile() {
 }
 
 function compile(watch) {
-  var bundler = watchify(browserify('./src/Roo.js', { 
+  var bundler = browserify({ 
+    entries: ['./src/Roo.js'],
     debug: false, 
-    standalone: outputFileName
-  }).transform(babel, {presets: babelPresets}));
+    standalone: outputFileName,
+    cache: {},
+    packageCache: {},
+    plugin: [watchify]
+
+  }).transform(babel, {presets: babelPresets});
 
   function rebundle() {
     gulp.src('src/**/*.js')

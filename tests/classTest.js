@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-import Roo, { connect } from '../src/Roo'
+import Roo, { connect, stateChange } from '../src/Roo'
 import React, { Component } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
@@ -14,42 +14,46 @@ global.window = doc.defaultView
 
 /*** Roo classes ***/
 
-class Company extends Roo.Class {
+class Company {
 
 	constructor() {
-		super({
-			employees: [],
-			name: ""
-		});
+		this.employees = [];
 	}
 
-	setName(name) { this.set({name}) }
-
-
-
-	
+	@stateChange
 	setName(name) {
-		this.set({name})
+		this.name = name;
 	}
 
+	@stateChange
 	addEmployee(employee) {
 		this.employees.push(employee);
-		this.set({
-			employees: this.employees
+	}
+
+	@stateChange
+	setEmployees(employeeList) {
+		this.employees = employeeList;
+	}
+
+	@stateChange
+	setAllToJose() {
+		this.employees.forEach((e)=>{
+			e.setName("JOSE");
 		})
 	}
+
 }
 
 
-class Employee extends Roo.Class {
+class Employee {
 
 	constructor(name) {
-		super({
-			name: name
-		});
+		this.name = name;
 	}
+
+	@stateChange
 	setName(name) {
-		this.set({name})
+		this.name = name;
 	}
 }
 
@@ -91,8 +95,8 @@ let spied = sinon.spy(ParentComp.prototype, 'render');
 let childSpied = sinon.spy(ChildComp.prototype, 'render');
 
 describe('Roo object', function () {
-	it('should update properties when calling set()', function(done) {
-		
+	
+	it('should update properties when calling a stateChange method', function(done) {
 		const company = new Company();
 		company.setName("James");
 		assert.equal(company.name, "James");
@@ -100,13 +104,7 @@ describe('Roo object', function () {
 
 	});
 
-	it('should construct with initial props', function(done) {
-		const employee = new Employee("James");
-		assert.equal(employee.name, "James");
-		done();
-	});
-
-	it('should trigger a re-render of components when calling set()', function(done) {
+	it('should trigger a re-render of components when calling a stateChange method', function(done) {
 
 		const company = new Company();
 		const wrapper = mount(<ParentComp company={company} />);
@@ -117,7 +115,7 @@ describe('Roo object', function () {
 		spied.reset();
 	});
 
-	it('should trigger a re-render of components when calling set() on any linked objects', function(done) {
+	it('should trigger a re-render of components when calling a stateChange method on any linked objects', function(done) {
 		
 		const company = new Company();
 		const wrapper = mount(<ParentComp company={company} />);
@@ -158,20 +156,23 @@ describe('Roo object', function () {
 		const employee1 = new Employee("James");
 		const employee2 = new Employee("Henry");
 		const employee3 = new Employee("Mary");
+
 		company.addEmployee(employee1);
 
+		// child render 1
 		const wrapper = mount(<ParentComp company={company} />);
 
-		company.set({
-			employees: [employee2]
-		})
+		// child render 2
+		company.setEmployees([employee2]);
 
+		// child render 3
 		employee2.setName("Henry the second");
 
 		assert.equal(ParentComp.prototype.render.callCount, 2);
 		assert.equal(ChildComp.prototype.render.callCount, 3);
 		assert.equal(wrapper.html(), "<div><div></div><div>Henry the second</div></div>");
 
+		// should not trigger another render
 		employee1.setName("James the first");
 
 		assert.equal(ParentComp.prototype.render.callCount, 2);
@@ -191,22 +192,21 @@ describe('Roo object', function () {
 		const employee2 = new Employee("Henry");
 		const employee3 = new Employee("Mary");
 
+		company.addEmployee(employee1);
+		company.addEmployee(employee2);
+		company.addEmployee(employee3);
+
+		// 1, 3
 		const wrapper = mount(<ParentComp company={company} />);
+		assert.equal(ParentComp.prototype.render.callCount, 1);
+		assert.equal(ChildComp.prototype.render.callCount, 3);
 
-		const updater = Roo.updateOnce(function() {
-			company.set({
-				employees: [employee1, employee2]
-			})
-			employee2.setName("Henry the second");
-			employee1.setName("Joooohn");
-			employee2.setName("second");
-		});
-
-		updater();
+		// 2, 6
+		company.setAllToJose();
 
 		assert.equal(ParentComp.prototype.render.callCount, 2);
-		assert.equal(ChildComp.prototype.render.callCount, 2);
-		assert.equal(wrapper.html(), "<div><div></div><div>Joooohn</div><div>second</div></div>");
+		assert.equal(ChildComp.prototype.render.callCount, 6);
+		assert.equal(wrapper.html(), "<div><div></div><div>JOSE</div><div>JOSE</div><div>JOSE</div></div>");
 
 		done();
 		spied.reset();

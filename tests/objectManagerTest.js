@@ -1,11 +1,11 @@
 var assert = require('assert');
 
-import Reactoo, { Class, connect }  from '../src/Roo'
+import Roo, { stateChange, connect }  from '../src/Roo'
 import React, { Component } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
 
-import objectManager from "../src/utils/objectManager";
+import objectManager from "../src/main/objectManager";
 
 import jsdom from 'jsdom'
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
@@ -17,35 +17,31 @@ const om = objectManager;
 
 
 
-class Company extends Class {
+class Company {
 
 	constructor() {
-		super({
-			employees: [],
-			name: ""
-		});
+		this.employees = [];
+		this.name = "";
 	}
 
-	setName(name) { this.set({name}) }
+	@stateChange
+	setName(name) { this.name = name }
 	
+	@stateChange
 	addEmployee(employee) {
 		this.employees.push(employee);
-		this.set({
-			employees: this.employees
-		})
 	}
 }
 
 
-class Employee extends Class {
+class Employee {
 
 	constructor(name) {
-		super({
-			name: name
-		});
+		this.name = name;
 	}
+	@stateChange
 	setName(name) {
-		this.set({name})
+		this.name = name;
 	}
 }
 
