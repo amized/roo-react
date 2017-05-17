@@ -130,7 +130,7 @@ class Hero extends React.Component {
 
 Hero = connect(Hero)
 ```
-Notice now there is no need for a ```setState()``` call, and no need to put state-modifying logic into the component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
+Notice now there is no need for a ```setState()``` call, and no need to put state-modifying logic into the component. Also conveniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
 
 Don't forget to pass in your object as a prop to the component to bind your components to the object
 
