@@ -48,10 +48,10 @@ For the initial render, this works ok. But if I want to my member function ```se
 class MyWrapper extends React.Component {
   
   constructor() {
-  	super(props);
-  	this.state = {
-  	  org: new Organisation()
-  	}
+    super(props);
+    this.state = {
+  	   org: new Organisation()
+  	 }
   }
 
   setOrgName = () => {
@@ -59,14 +59,14 @@ class MyWrapper extends React.Component {
     this.setState({
       org: this.state.org
     })
- }
+  }
   
   render() {
-	return (
-	  <div>
-		<MyComponent org={this.state.myorg} setOrgName={this.setOrgName}/>
-	  </div>
-	)
+    return (
+      <div>
+        <MyComponent org={this.state.myorg} setOrgName={this.setOrgName}/>
+      </div>
+    )
   }
 }
 
@@ -75,12 +75,12 @@ class MyWrapper extends React.Component {
 class MyComponent extends React.Component {
 
   render() {
-	return (
-	  <div>
-		<div>{this.props.org.name}</div>
-		<button onClick={this.props.setOrgName}>Click</button>
-	  </div>
-	)
+    return (
+      <div>
+        <div>{this.props.org.name}</div>
+        <button onClick={this.props.setOrgName}>Click</button>
+      </div>
+    )
   }
 
 }
@@ -110,7 +110,7 @@ class Organisation extends Class  {
 }
 ```	
 
-What the ```@stateChange``` decorator does is runs the code in your function (which supposedly modified the state of your object) and then updates the relevant React components to reflect the change your UI.
+What the ```@stateChange``` decorator does is tells Roo that the code in your function will in some way modify the state of your object, and therefor it should update the relevant React components to reflect the change your UI.
 
 To get this to work with your components use the ```connect``` wrapper:
 
@@ -131,7 +131,7 @@ class MyComponent extends React.Component {
 	
 MyComponent = connect(MyComponent)
 ```
-Notice now there is no need for a ```setState()``` call, or even the extra method on our component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
+Notice now there is no need for a ```setState()``` call, and no need to put state-modifying logic into the component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
 
 Don't forget to pass in your object as a prop to the component to bind your components to the object
 
