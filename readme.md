@@ -8,16 +8,16 @@ Roo gives you a way of doing this while using React for your UI.
 
 ##Who's this really good for?
 
-In some sense React already adopts an OO methodology - components are objects that hold state and logic for updating their state. And this is perfect for describing a user interface. It's even perfect for building simple applications who's job it is to display or submit data, like a website.
+In some sense React already adopts an OO methodology - components are objects that hold state and logic for updating their state. And this is great for describing a user interface. It's even great for building simple applications who's job it is to display or submit data, like a website.
 
-But if you're building a more complex web/HTML application like...
+But let's say you're building a more complex web/HTML application like...
 
 * a game
 * a simulation
 * an AI
 * modeling
 
-you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic, but currently it's a bit messy trying to mix these with React.
+Performance may be a critical issue, and you'll probably want to structure your application logic yourself, and make sure it is decoupled from your UI. Javascript classes are a great way of modularising your logic, but currently it's a bit messy trying to mix these with React.
 
 ##Example
 Let's say your application has an Organisation.
@@ -92,41 +92,27 @@ class MyComponent extends React.Component {
 
 * If I call the member function from outside React, or from a different component, there is no way to update the associated React elements on the page
 
-* Code is a bit ugly!
+* Code is bloated and ugly!
 
 ## How Roo works
-Let's solve this by extending a RooClass
+Let's solve this by adding a ```@stateChange``` decorator to our function:
 
 ```javascript
-import { Class } from 'roo-react'
+import { stateChange } from 'roo-react'
 
 class Organisation extends Class  {
+
+  @stateChange
   setName(name) { 
     this.set({name}) 
   }
+  
 }
 ```	
 
-In a Roo class, you need to make sure that instead of directly mutating the object's properties, you call ```this.set()```. This function will trigger a re-render of any React elements that have an ```Organisation``` object as a prop.
+What the ```@stateChange``` decorator does is runs the code in your function (which supposedly modified the state of your object) and then updates the relevant React components to reflect the change your UI.
 
-Just to reiterate, in Roo **don't do this**: 
-
-```javascript
-this.name = "henry"
-```
-
-Do this:
-
-```javascript
-this.set({ 
-  name: "henry"
-})
-``` 
- 
- 
-It's also fine to mutate your object's properties, as long as you call ```set()``` to do so.
-
-Now just use the ```connect``` wrapper on your component:
+To get this to work with your components use the ```connect``` wrapper:
 
 ```javascript
 import { connect } from 'roo-react'
@@ -145,9 +131,9 @@ class MyComponent extends React.Component {
 	
 MyComponent = connect(MyComponent)
 ```
-Notice now there is no need for the extra update call, or even the extra method on our component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
+Notice now there is no need for a ```setState()``` call, or even the extra method on our component. Also conviniently, the methods for updating the state are passed along with the objects, saving code on explicitly passing down state-setting functions through props.
 
-Don't forget to pass in your object as a prop to the component for re-rendering to work
+Don't forget to pass in your object as a prop to the component to bind your components to the object
 
 ```javascript
 let myorg = new Organisation()
@@ -155,7 +141,7 @@ let myorg = new Organisation()
 <MyComponent org={myorg} /> 
 ```
 
-
+And that's it!
 
 I can now call the member function on my object from anywhere in my application and the React element will appropriately update.
 

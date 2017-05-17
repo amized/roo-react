@@ -99,15 +99,6 @@ class ObjectManager {
 		this.updateIds++;
 	}
 
-	notifyMultipleUpdates() {
-		const updateId = this.updateIds;
-		const uniqTokens = _.uniq([].concat.apply([], this.updateBuffer));
-		const reactElements = uniqTokens.map(token => this.reactElements[token]);
-		reactElements.forEach(u=>u.func(updateId));
-		this.updateIds++;
-		this.updateBuffer = [];
-	}
-
 	// Decorator function for notifying a state change
 	stateChange(target, name, descriptor) {
 	  let fn = descriptor.value;
@@ -164,16 +155,6 @@ class ObjectManager {
 			}
 		});
 		return objs;		
-	}
-
-	updateOnce(func) {
-		let self = this;
-		return function(...args) {
-			self.notifyMultipleUpdatesOn = true;
-			func();
-			self.notifyMultipleUpdates();
-			self.notifyMultipleUpdatesOn = false;
-		}
 	}
 }
 
