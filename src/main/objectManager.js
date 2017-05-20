@@ -144,6 +144,10 @@ class ObjectManager {
 	}
 
 	getRooObjsShallow(props) {
+		let objs = this.getRooObjs(props);
+		return Object.keys(objs).map(key => objs[key]);
+		/*
+		return Object.keys(props).map
 		const objs = []
 		Object.keys(props).forEach((key) => {
 			let prop = props[key];
@@ -154,8 +158,24 @@ class ObjectManager {
 				objs.push(prop);
 			}
 		});
+		return this.getRooObjs();
+		*/		
+	}
+
+	getRooObjs(props) {
+		const objs = {}
+		Object.keys(props).forEach((key) => {
+			let prop = props[key];
+			if (prop === undefined || prop === null) {
+				return;
+			}
+			if (this.isRooObject(prop)) {
+				objs[key] = prop;
+			}
+		});
 		return objs;		
 	}
+
 }
 
 const objectManager = new ObjectManager();
