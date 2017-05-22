@@ -144,36 +144,38 @@ class ObjectManager {
 	}
 
 	getRooObjsShallow(props) {
-		let objs = this.getRooObjs(props);
-		return Object.keys(objs).map(key => objs[key]);
-		/*
-		return Object.keys(props).map
-		const objs = []
-		Object.keys(props).forEach((key) => {
-			let prop = props[key];
-			if (prop === undefined || prop === null) {
-				return;
-			}
-			if (this.isRooObject(prop)) {
-				objs.push(prop);
-			}
-		});
-		return this.getRooObjs();
-		*/		
+		return this.getRooObjs(props).list;
+	}
+
+	getRooObjsAsDict(props) {
+		return this.getRooObjs(props).dict;
 	}
 
 	getRooObjs(props) {
-		const objs = {}
+
+		let objsAsList = [];
+		let objsAsDict = {};
+
 		Object.keys(props).forEach((key) => {
 			let prop = props[key];
 			if (prop === undefined || prop === null) {
 				return;
 			}
 			if (this.isRooObject(prop)) {
-				objs[key] = prop;
+				objsAsDict[key] = prop;
+				objsAsList.push(prop);
+			}
+			else if (Array.isArray(prop)) {
+				let list = prop.filter(item => this.isRooObject(item));
+				objsAsDict[key] = list;
+				objsAsList = objsAsList.concat(list);
 			}
 		});
-		return objs;		
+		
+		return {
+			dict: objsAsDict,
+			list: objsAsList
+		}		
 	}
 
 }

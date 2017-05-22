@@ -35,8 +35,13 @@ export default function connect(mapObjsToProps) {
 
 			getProps() {
 				if (mapObjsToProps) {
-					let objs = objectManager.getRooObjs(this.props);
-					return Object.assign({}, this.props, mapObjsToProps(objs));
+					let objs = objectManager.getRooObjsAsDict(this.props);
+					let newProps = mapObjsToProps(objs);
+					if (typeof newProps !== "object") {
+						throw new Error("Roo: MapObjsToProps function must return an object");
+						return this.props;
+					}
+					return Object.assign({}, this.props, newProps);
 				}
 				else {
 					return this.props;

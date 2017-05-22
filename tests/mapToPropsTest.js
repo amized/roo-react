@@ -86,80 +86,52 @@ class Superpower {
 
 describe('Roo component', function () {
 
-
-	class ParentComp extends Component {
-		render() {
-			return (
-				<div>
-					<div>{this.props.company.name}</div>
-					{
-						this.props.company.employees.map((employee, index) => {
-							return <ConnectedChildComp employee={employee} key={index} />
-						})
-					}
-				</div>
-			)
-		}
-	}
-
-	class ChildComp extends Component {
-		static propTypes = {
-			name: PropTypes.string
-		} 
-		render() {
-			return (
-				<div>{this.props.name}</div>
-			)
-		}
-	}
-
-
-
-	class ParentCompTwo extends Component {
-		static propTypes = {
-			name: PropTypes.string
-		} 
-		render() {
-			return (
-				<div>{this.props.name}</div>
-			)
-		}
-	}
-
-	const mapToProps = function(objs) {
-		return {
-			name: objs.employee.name
-		}
-
-	}
-
-
-	const ConnectedChildComp = connect(mapToProps)(ChildComp);
-
-	
-
 	it('should pass the correct props to the child given a mapToProps function', function(done) {
-
-		console.log("------ ROOO COMPOENNTN TEST ------");
+		class ParentComp extends Component {
+			render() {
+				return (
+					<div>
+						<div>{this.props.company.name}</div>
+						{
+							this.props.company.employees.map((employee, index) => {
+								return <ConnectedChildComp employee={employee} key={index} />
+							})
+						}
+					</div>
+				)
+			}
+		}
+		class ChildComp extends Component {
+			static propTypes = {
+				name: PropTypes.string
+			} 
+			render() {
+				return (
+					<div>{this.props.name}</div>
+				)
+			}
+		}
 		const mapToProps = function(objs) {
 			return {
 				name: objs.employee.name
 			}
 
 		}
-
+		const ConnectedChildComp = connect(mapToProps)(ChildComp);
 		const company = new Company();
 		company.setName("PlayFi")
 		company.addEmployee(new Employee("David"));
 		company.addEmployee(new Employee("Jess"));
-		console.log("The company", company);
 		const wrapper = mount(<ParentComp company={company} />);
 		assert.equal(wrapper.html(), "<div><div>PlayFi</div><div>David</div><div>Jess</div></div>");
 		done();
 	});
 
-	it('should be able to deal with multiple objects', function(done) {
 
+
+
+
+	it('should be able to deal with multiple objects', function(done) {
 		class GuyWithPower extends Component {
 			static propTypes = {
 				name: PropTypes.string,
@@ -174,7 +146,6 @@ describe('Roo component', function () {
 				)
 			}
 		}
-
 		const mapToProps = function(objs) {
 			return {
 				name: objs.employee.name,
@@ -182,9 +153,7 @@ describe('Roo component', function () {
 			}
 
 		}
-
 		GuyWithPower = connect(mapToProps)(GuyWithPower);		
-		
 		class TestComp extends Component {
 			render() {
 				return (
@@ -198,7 +167,6 @@ describe('Roo component', function () {
 				)
 			}
 		}
-
 		const company = new Company();
 		const david = new Employee("David");
 		const jess = new Employee("Jess");
@@ -206,13 +174,65 @@ describe('Roo component', function () {
 		company.addEmployee(jess);
 
 		let sp = new Superpower("flying");
-		console.log("The company", company);
 		const wrapper = mount(<TestComp company={company} superpower={sp} />);
 		assert.equal(wrapper.html(), "<div><div><p>David</p><p>flying</p></div><div><p>Jess</p><p>flying</p></div></div>");
 		sp.setType("invisibility");
 		assert.equal(wrapper.html(), "<div><div><p>David</p><p>invisibility</p></div><div><p>Jess</p><p>invisibility</p></div></div>");
 		david.setName("Germain");
 		assert.equal(wrapper.html(), "<div><div><p>Germain</p><p>invisibility</p></div><div><p>Jess</p><p>invisibility</p></div></div>");
+		done();
+	});
+
+
+
+
+
+	it('should be able to bind an array of roo objects passed as props', function(done) {
+		class ManyWithPower extends Component {
+			static propTypes = {
+				employees: PropTypes.array
+			} 
+			render() {
+				return (
+					<div>
+						{ 
+							this.props.employees.map((e,index) => <EmployeeComp employee={e} key={index} />) 
+						}
+					</div>
+				)
+			}
+		}
+		ManyWithPower = connect()(ManyWithPower);		
+		class EmployeeComp extends Component {
+			static propTypes = {
+				employees: PropTypes.array
+			} 
+			render() {
+				return (
+					<p>
+						{ this.props.employee.name }
+					</p>
+				)
+			}
+		}
+		class TestComp extends Component {
+			render() {
+				return (
+					<div>
+						<ManyWithPower employees={this.props.company.employees}/>
+					</div>
+				)
+			}
+		}
+		const company = new Company();
+		const david = new Employee("David");
+		const jess = new Employee("Jess");
+		company.addEmployee(david);
+		company.addEmployee(jess);
+		const wrapper = mount(<TestComp company={company} />);
+		assert.equal(wrapper.html(), "<div><div><p>David</p><p>Jess</p></div></div>");
+		david.setName("Germain");
+		assert.equal(wrapper.html(), "<div><div><p>Germain</p><p>Jess</p></div></div>");
 		done();
 	});
 
