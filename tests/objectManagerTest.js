@@ -87,6 +87,25 @@ describe('Object manager', function () {
 		done();
 	});
 
+	it('should not try to run an update on an unmounted component', function(done) {
+
+		om.clear();
+		let onUpdate = ()=>false;
+		let company1 = new Company;
+		let company2 = new Company;
+		let employee1 = new Employee("Barbie");
+		let employee2 = new Employee("Boobie")
+		let props = {
+			company: company1, 
+			num: 5, 
+			someString: "hello"
+		}
+
+		let token = om.registerElement(onUpdate, props);
+		om.deregisterElement(token);
+		om.notifyUpdate([token]);
+		done();
+	})
 
 
 

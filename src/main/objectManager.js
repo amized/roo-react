@@ -95,7 +95,11 @@ class ObjectManager {
 
 		const reactElements = tokens.map(token => this.reactElements[token]);
 		const updateId = this.updateIds;
-		reactElements.forEach(u=>u.func(updateId));
+		reactElements.forEach(u => {
+			if (u) {
+				u.func(updateId);
+			}
+		});
 		this.updateIds++;
 	}
 
