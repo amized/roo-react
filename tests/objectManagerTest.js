@@ -91,6 +91,7 @@ describe('Object manager', function () {
 
 		om.clear();
 		let onUpdate = ()=>false;
+		let spied = sinon.spy(onUpdate);
 		let company1 = new Company;
 		let company2 = new Company;
 		let employee1 = new Employee("Barbie");
@@ -101,9 +102,11 @@ describe('Object manager', function () {
 			someString: "hello"
 		}
 
-		let token = om.registerElement(onUpdate, props);
+		let token = om.registerElement(spied, props);
+		om.notifyUpdate([token]);
 		om.deregisterElement(token);
 		om.notifyUpdate([token]);
+		assert.equal(spied.calledOnce, true);
 		done();
 	})
 
