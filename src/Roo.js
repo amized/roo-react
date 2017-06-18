@@ -1,5 +1,4 @@
-import connect from './main/connect'
-import { stateChange } from './main/decorators'
+import { connect, stateChange, objectManager } from './main'
 
 module.exports = {
 	stateChange: stateChange,

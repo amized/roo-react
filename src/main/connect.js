@@ -26,7 +26,7 @@ export default function connect(mapObjsToProps) {
 				this.setState({
 					lastUpdatedId: objectManager.getCurrentUpdateId()
 				})
-				objectManager.reRegisterElement(this.props, nextProps, this.rooToken);
+				objectManager.reRegisterElement(nextProps, this.rooToken);
 			}
 
 			componentWillUnmount() {

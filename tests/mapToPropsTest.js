@@ -1,6 +1,7 @@
 var assert = require('assert');
 
 import Roo, { connect, stateChange } from '../src/Roo'
+import objectManager from '../src/main/objectManager'
 import React, { Component, PropTypes } from "react"
 import sinon from "sinon";
 import { mount, shallow } from 'enzyme';
@@ -46,6 +47,18 @@ class Company {
 
 
 class Employee {
+
+	constructor(name) {
+		this.name = name;
+	}
+
+	@stateChange
+	setName(name) {
+		this.name = name;
+	}
+}
+
+class Investor {
 
 	constructor(name) {
 		this.name = name;

@@ -100,7 +100,7 @@ function watch() {
   return compile(true);
 };
 gulp.task('transpile', function() { return transpile(); });
-gulp.task('build', function() { return compile(); });
+gulp.task('build', function() { return compile(false); });
 gulp.task('watch', function() { return watch(); });
 
 gulp.task('default', ['watch']);

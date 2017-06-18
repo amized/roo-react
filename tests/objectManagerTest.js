@@ -45,7 +45,17 @@ class Employee {
 	}
 }
 
+class Investor {
 
+	constructor(name) {
+		this.name = name;
+	}
+
+	@stateChange
+	setName(name) {
+		this.name = name;
+	}
+}
 
 describe('Object manager', function () {
 
@@ -72,7 +82,7 @@ describe('Object manager', function () {
 			someString: "hello"			
 		}
 
-		om.reRegisterElement(props, nextProps, 0);
+		om.reRegisterElement(nextProps, 0);
 		assert.deepEqual(company1.__roo.tokens, []);
 
 		props = nextProps;
@@ -81,9 +91,103 @@ describe('Object manager', function () {
 			num: 5,
 			someString: "hi"
 		}
-		om.reRegisterElement(props, nextProps, 0);
+		om.reRegisterElement(nextProps, 0);
 		assert.deepEqual(company1.__roo.tokens, []);
 		assert.deepEqual(company2.__roo.tokens, [0]);
+		done();
+	});
+
+	it('should re register array elements correctly', function(done) {
+
+		om.clear();
+
+		let onUpdate = ()=>false;
+		let employee1 = new Employee("Barbie");
+		let employee2 = new Employee("Boobie");
+		let investor1 = new Investor("James");
+		let investor2 = new Investor("Harry");
+
+		let propsForEl0 = {
+			company: [employee1, employee2], 
+			num: 5, 
+			someString: "hello"
+		}
+		om.registerElement(onUpdate, propsForEl0);
+		assert.deepEqual(employee1.__roo.tokens, [0]);
+		assert.deepEqual(employee2.__roo.tokens, [0]);
+
+		let nextProps = {
+			company: [employee1], 
+			num: 5, 
+			someString: "hello"			
+		}
+
+		om.reRegisterElement(nextProps, 0);
+		assert.deepEqual(employee1.__roo.tokens, [0]);
+		assert.deepEqual(employee2.__roo.tokens, []);
+
+		propsForEl0 = nextProps;
+
+		//props = nextProps;
+
+		let propsForEl1  = {
+			company: [employee1, employee2], 
+			investors: [investor1, investor2],
+			num: 5, 
+			someString: "hello"	
+		}
+		om.registerElement(onUpdate, propsForEl1);
+
+		//om.reRegisterElement(props, nextProps, 5);
+		assert.deepEqual(employee1.__roo.tokens, [0, 1]);
+		assert.deepEqual(employee2.__roo.tokens, [1]);
+		assert.deepEqual(investor1.__roo.tokens, [1]);
+		assert.deepEqual(investor2.__roo.tokens, [1]);
+
+		nextProps = {
+			company: [employee2], 
+			investors: [investor1],
+			num: 5, 
+			someString: "hello"	
+		}
+
+		om.reRegisterElement(nextProps, 0);
+		assert.deepEqual(employee1.__roo.tokens, [1]);
+		assert.deepEqual(employee2.__roo.tokens, [1, 0]);
+		assert.deepEqual(investor1.__roo.tokens, [1, 0]);
+		assert.deepEqual(investor2.__roo.tokens, [1]);
+		done();
+
+	});
+
+	it ('should remove tokens from all roo objects when an object is deregistered', function(done) {
+		om.clear();
+
+		let onUpdate = ()=>false;
+		let employee1 = new Employee("Barbie");
+		let employee2 = new Employee("Boobie");
+		let investor1 = new Investor("James");
+		let investor2 = new Investor("Harry");		
+
+		let propsForEl0 = {
+			company: [employee1, employee2], 
+			num: 5, 
+			someString: "hello"
+		}
+		let propsForEl1 = {
+			company: [employee1, employee2, investor1], 
+			num: 5, 
+			someString: "hello"
+		}
+		om.registerElement(onUpdate, propsForEl0);
+		om.registerElement(onUpdate, propsForEl1);
+		om.deregisterElement(0);
+
+		assert.equal(om.reactElements[0], undefined);
+		assert.deepEqual(employee1.__roo.tokens, [1]);
+		assert.deepEqual(employee2.__roo.tokens, [1]);
+		assert.deepEqual(investor1.__roo.tokens, [1]);
+
 		done();
 	});
 
@@ -109,6 +213,7 @@ describe('Object manager', function () {
 		assert.equal(spied.calledOnce, true);
 		done();
 	})
+
 
 
 

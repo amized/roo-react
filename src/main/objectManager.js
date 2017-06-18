@@ -25,7 +25,8 @@ class ObjectManager {
 		let token = this.tokenIds;
 		this.reactElements[token] = {
 			token: token,
-			func: onUpdate
+			func: onUpdate,
+			objs: objs
 		};
 
 		// Need to pass the update token to each some how 
@@ -39,10 +40,16 @@ class ObjectManager {
 	}
 
 	deregisterElement(token) {
+		const element = this.reactElements[token];
+		if (!element) return;
+		element.objs.forEach((obj) => {
+			this.removeToken(token, obj); 
+		});
 		this.reactElements[token] = undefined;
 	}
 
-	reRegisterElement(oldProps, newProps, token) {
+	reRegisterElement(newProps, token) {
+
 		const element = this.reactElements[token];
 		if (!element) return;
 		
@@ -50,7 +57,7 @@ class ObjectManager {
 		// into the component. It compares prev and next and
 		// updates tokens on the objects
 
-		const oldObjs = this.getRooObjsShallow(oldProps);
+		const oldObjs = element.objs;
 		const newObjs = this.getRooObjsShallow(newProps);
 
 		let removed = _.difference(oldObjs, newObjs);
@@ -63,6 +70,8 @@ class ObjectManager {
 		removed.forEach((obj) => {
 			this.removeToken(token, obj); 
 		})
+
+		element.objs = newObjs;
 
 		return token;
 	}
@@ -88,6 +97,7 @@ class ObjectManager {
 	}
 
 	notifyUpdate(tokens) {
+
 		// Sort tokens so the update functions are in heirachial order
 		tokens.sort(function(a, b) {
 		  return a - b;
@@ -102,34 +112,6 @@ class ObjectManager {
 		});
 		this.updateIds++;
 	}
-
-	// Decorator function for notifying a state change
-	stateChange(target, name, descriptor) {
-	  let fn = descriptor.value;
-	  let om = this;
-	  
-	  // Adds a property onto the prototype so that we can quickly
-	  // check that this object is a Roo object
-	  target.__roo_enabled = true;
-	  let newFn  = function (...args) {
-	  	if (this.__roo) {
-	  		om.updateBuffer.push(this.__roo.tokens);
-	  	}
-	  	if (!om.isUpdating) {
-		  	om.isUpdating = true;
-		    const result = fn.apply(this, arguments);
-		    const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
-		    om.notifyUpdate(uniqTokens);
-		    om.updateBuffer = [];
-		    om.isUpdating = false;
-		    return result;
-	  	}
-	  	return fn.apply(this, arguments);
-	  };
-	  descriptor.value = newFn;
-	  return descriptor;
-	}
-
 
 	isRooObject(obj) {
 		if (typeof obj === "object") {
@@ -156,10 +138,8 @@ class ObjectManager {
 	}
 
 	getRooObjs(props) {
-
 		let objsAsList = [];
 		let objsAsDict = {};
-
 		Object.keys(props).forEach((key) => {
 			let prop = props[key];
 			if (prop === undefined || prop === null) {
@@ -170,12 +150,17 @@ class ObjectManager {
 				objsAsList.push(prop);
 			}
 			else if (Array.isArray(prop)) {
-				let list = prop.filter(item => this.isRooObject(item));
+				let list = prop.filter(item => {
+					if (this.isRooObject(item)) {
+						objsAsList.push(item);
+						return true;
+					}
+					return false;
+				});
 				objsAsDict[key] = list;
-				objsAsList = objsAsList.concat(list);
 			}
 		});
-		
+
 		return {
 			dict: objsAsDict,
 			list: objsAsList
