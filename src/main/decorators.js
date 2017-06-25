@@ -32,13 +32,16 @@ export function stateChange(target, name, descriptor) {
 export function updateOnce(func) {
 
   let newFn = function (...args) {
-    om.isUpdating = true;
-    const result = func(...args);
-    const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
-    om.notifyUpdate(uniqTokens);
-    om.updateBuffer = [];
-    om.isUpdating = false;
-    return result;
+    if (!om.isUpdating) {
+      om.isUpdating = true;
+      const result = func(...args);
+      const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
+      om.notifyUpdate(uniqTokens);
+      om.updateBuffer = [];
+      om.isUpdating = false;
+      return result;
+    }
+    return func(...args);
   }
 
   return newFn;
