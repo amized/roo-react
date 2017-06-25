@@ -30,11 +30,16 @@ export function stateChange(target, name, descriptor) {
 
 // Decorator for a function declaration
 export function updateOnce(func) {
+
+  let newFn = function (...args) {
     om.isUpdating = true;
-    const result = func();
+    const result = func(...args);
     const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
     om.notifyUpdate(uniqTokens);
     om.updateBuffer = [];
     om.isUpdating = false;
     return result;
+  }
+
+  return newFn;
 }

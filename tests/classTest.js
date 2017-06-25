@@ -234,7 +234,9 @@ describe('Roo object', function () {
 			employee1.setName("James2");
 		}
 
-		Roo.updateOnce(update);
+		update = Roo.updateOnce(update);
+
+		update();
 		assert.equal(wrapper.html(), "<div><div>Ok company</div><div>James2</div><div>Henry</div><div>Mary</div></div>");
 		assert.equal(ParentComp.prototype.render.callCount, 2);
 		
