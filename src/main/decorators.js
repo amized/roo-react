@@ -1,11 +1,11 @@
 import objectManager from "./ObjectManager"
 import _ from "lodash"
 
-// Decorator function for notifying a state change
+const om = objectManager;
+
+// Decorator function for method notifying a state change
 export function stateChange(target, name, descriptor) {
   let fn = descriptor.value;
-  let om = objectManager;
-  
   // Adds a property onto the prototype so that we can quickly
   // check that this object is a Roo object
   target.__roo_enabled = true;
@@ -26,4 +26,15 @@ export function stateChange(target, name, descriptor) {
   };
   descriptor.value = newFn;
   return descriptor;
+}
+
+// Decorator for a function declaration
+export function updateOnce(func) {
+    om.isUpdating = true;
+    const result = func();
+    const uniqTokens = _.uniq([].concat.apply([], om.updateBuffer));
+    om.notifyUpdate(uniqTokens);
+    om.updateBuffer = [];
+    om.isUpdating = false;
+    return result;
 }

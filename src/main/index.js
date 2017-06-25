@@ -1,5 +1,5 @@
 import connect from "./connect"
-import { stateChange } from "./decorators"
+import { stateChange, updateOnce } from "./decorators"
 import objectManager from "./objectManager"
 
-export { connect, stateChange, objectManager }
+export { connect, stateChange, updateOnce, objectManager }

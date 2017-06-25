@@ -213,6 +213,35 @@ describe('Roo object', function () {
 		childSpied.reset();
 	});
 
+	it('should be able to run multiple state changes inside a updateOnce wrapper, and only update once', function(done) {
+
+		const company = new Company();
+		const employee1 = new Employee("James");
+		const employee2 = new Employee("Henry");
+		const employee3 = new Employee("Mary");
+
+		company.addEmployee(employee1);
+		company.addEmployee(employee2);
+		company.addEmployee(employee3);
+
+		// 1, 3
+		const wrapper = mount(<ParentComp company={company} />);
+
+		let update = () => {
+			company.setName("Best company");
+			company.setName("Worst company");
+			company.setName("Ok company");
+			employee1.setName("James2");
+		}
+
+		Roo.updateOnce(update);
+		assert.equal(wrapper.html(), "<div><div>Ok company</div><div>James2</div><div>Henry</div><div>Mary</div></div>");
+		assert.equal(ParentComp.prototype.render.callCount, 2);
+		
+		done();
+		spied.reset();
+		childSpied.reset();
+	});
 
 });
 
